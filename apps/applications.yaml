@@ -8,8 +8,8 @@ spec:
   - git:
       repoURL: https://github.com/jdmcmahan/home-ops.git
       revision: HEAD
-      directories:
-      - path: "apps/**/application.yaml"
+      files:
+      - path: "apps/**/kustomization.yaml"
   template:
     metadata:
       name: "{{ path.basenameNormalized }}"
