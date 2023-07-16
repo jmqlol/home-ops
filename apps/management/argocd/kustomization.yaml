@@ -4,34 +4,49 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+- namespace.yaml
 - github.com/argoproj/argo-cd/manifests/ha/base?ref=v2.7.7
 - ingress.yaml
 - applications.yaml
 
 patches:
 - patch: |-
-    - op: add
-      path: "/data"
-      value:
-        server.insecure: "true"
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: argocd-cmd-params-cm
+    data:
+      server.insecure: "true"
   target:
     kind: ConfigMap
     name: "argocd-cmd-params-cm"
 - patch: |-
-    - op: add
-      path: "/data"
-      value:
-        kustomize.buildOptions: "--enable-helm"
-        resource.customizations.ignoreDifferences.apiextensions.k8s.io_CustomResourceDefinition: |
-          jsonPointers:
-          - spec/conversion/webhook/clientConfig/caBundle
-        resource.exclusions: |-
-          - apiGroups:
-            - cilium.io
-            kinds:
-            - CiliumIdentity
-            clusters:
-            - "*"
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: argocd-cm
+    data:
+      kustomize.buildOptions: "--enable-helm"
+      resource.customizations.ignoreDifferences.apiextensions.k8s.io_CustomResourceDefinition: |
+        jsonPointers:
+        - spec/conversion/webhook/clientConfig/caBundle
+      resource.exclusions: |-
+        - apiGroups:
+          - cilium.io
+          kinds:
+          - CiliumIdentity
+          clusters:
+          - "*"
   target:
     kind: ConfigMap
     name: "argocd-cm"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-server
+    spec:
+      type: LoadBalancer
+  target:
+    kind: Service
+    name: "argocd-server"
