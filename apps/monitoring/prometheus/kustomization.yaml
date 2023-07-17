@@ -21,3 +21,6 @@ patches:
       name: kube-prometheus-stack-grafana
     spec:
       type: LoadBalancer
+  target:
+    kind: Service
+    name: "kube-prometheus-stack-grafana"
