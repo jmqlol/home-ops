@@ -12,3 +12,12 @@ helmCharts:
   version: 48.1.1
   releaseName: kube-prometheus-stack
   namespace: prometheus
+
+patches:
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: kube-prometheus-stack-grafana
+    spec:
+      type: LoadBalancer
