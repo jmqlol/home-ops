@@ -27,3 +27,13 @@ patches:
   target:
     kind: Service
     name: "kube-prometheus-stack-grafana"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: kube-prometheus-stack-prometheus
+    spec:
+      type: LoadBalancer
+  target:
+    kind: Service
+    name: "kube-prometheus-stack-prometheus"
