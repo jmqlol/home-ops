@@ -2,15 +2,15 @@
 
 This is a monorepository implementing infrastructure-as-code (IaC) and GitOps practices for my home Kubernetes cluster using tools such as [ArgoCD](https://github.com/argoproj/argo-cd) and [Renovate](https://github.com/renovatebot/renovate).
 
-This project was largely inspired by [onedr0p/flux-cluster-template](https://github.com/onedr0p/flux-cluster-template) but built entirely from scratch because I hate myself. Huge thanks to the amazing [k8s@home](https://discord.gg/sTMX7Vh) community for making Kubernetes accessible to homelabbers and hobbyists like me.
+This project is forked directly from [jdmcmahan/home-ops](https://github.com/jdmcmahan/home-ops) with modifications to suit my environment, which in turn is largely inspired by [onedr0p/flux-cluster-template](https://github.com/onedr0p/flux-cluster-template) 
 
 ## ⛵ Kubernetes
 
-My k8s cluster is running on bare-metal Talos servers. The infrastructure is somewhat hyperconverged with nodes handling both application workloads and block storage via [Rook Ceph](https://github.com/rook/rook).
+k8s cluster is running on virtualized Talos servers on Proxmox. The infrastructure is somewhat hyperconverged with nodes handling both application workloads and block storage via [Rook Ceph](https://github.com/rook/rook).
 
 ### Installation
 
-I use [Sidero Omni](https://www.siderolabs.com/platform/saas-for-kubernetes/) as the management plane for my cluster. The nodes are [automatically bootstraped and provisioned over PXE](https://omni.siderolabs.com/docs/how-to-guides/how-to-register-a-bare-metal-machine-pxe/) based on the resources defined in [/infrastructure/sidero/omni](https://github.com/jdmcmahan/home-ops/tree/main/infrastructure/sidero/omni).
+[Sidero Omni](https://www.siderolabs.com/platform/saas-for-kubernetes/) is the management plane for the cluster. The nodes are [automatically bootstraped and provisioned over PXE](https://omni.siderolabs.com/docs/how-to-guides/how-to-register-a-bare-metal-machine-pxe/) based on the resources defined in [/infrastructure/sidero/omni](https://github.com/jdmcmahan/home-ops/tree/main/infrastructure/sidero/omni).
 
 ### Core Components
 
@@ -45,14 +45,12 @@ The full `ApplicationSet` configuration is defined in [`apps/management/argocd/a
 
 ## 🔧 Hardware
 
-Many of my hardware components and parts have been salvaged from a local e-waste facility or bought second-hand from upcycling communities like [r/homelabsales](https://www.reddit.com/r/homelabsales). This has resulted in a very cost-effective but capable lab thanks to federated software like Proxmox and k8s.
+Many of my hardware components and parts have been purchased in cheap marketplace/ebay offers or were things I already had from previous workstation upgrades. This has resulted in a very cost-effective but capable lab thanks to federated software like Proxmox and k8s.
 
 | Device                      | Count | CPU              | RAM   | Operating System | Purpose                                      |
 |-----------------------------|-------|------------------|-------|------------------|----------------------------------------------|
-| Intel NUC8i5BEH             | 1     | Intel i5-8259U   | 16 GB | Proxmox          | General-purpose VMs & containers             |
-| Dell OptiPlex 7060 Micro    | 1     | Intel i5-8500T   | 16 GB | Talos            | Kubernetes control plane nodes               |
-| Dell OptiPlex 7060 Micro    | 2     | Intel i5-8500T   | 32 GB | Talos            | Kubernetes worker nodes                      |
-| Dell OptiPlex 7060 Micro    | 3     | Intel i5-8600T   | 32 GB | Talos            | Kubernetes worker nodes, block storage       |
-| Raspberry Pi 3B             | 1     | Broadcom BCM2837 | 1 GB  | OctoPi           | Remote 3D printer monitoring & management    |
-| Kobol Helios64              | 1     | Rockchip RK3399  | 4 GB  | Armbian          | NAS                                          |
-| UniFi UDM-Pro               | 1     | ARM Cortex-A57   | 4 GB  | UniFi OS         | Gateway, router, NVR                         |
+| Lenovo Thinkcentre tiny m600| 3     | Intel J3710      | 8 GB  | Proxmox          | Ceph block storage & Talos nodes             |
+| Kingnovy firewall host      | 1     | Intel N5100      | 16 GB | Proxmox          | Vyos router (HA), Talos nodes                |
+| Rackmount server PC         | 1     | Ryzen 2700x      | 64 GB | Proxmox          | VyOS router (HA), NAS, other VMs             |
+
+
