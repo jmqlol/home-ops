@@ -1,0 +1,85 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/common-3.0.1/charts/library/common/values.schema.json
+controllers:
+  plex:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/onedr0p/plex
+          tag: 1.40.0.7998-c29d4c0c8
+          pullPolicy: IfNotPresent
+        env:
+          TZ: "America/Chicago"
+        resources:
+          requests:
+            gpu.intel.com/i915: 1
+            cpu: 1000m
+            memory: 2048Mi
+          limits:
+            gpu.intel.com/i915: 1
+            cpu: 2000m
+            memory: 4096Mi
+
+defaultPodOptions:
+  securityContext:
+    runAsUser: 979
+    runAsGroup: 979
+    fsGroup: 979
+    fsGroupChangePolicy: "OnRootMismatch"
+    supplementalGroups:
+      - 44 # video
+
+service:
+  web:
+    enabled: true
+    controller: plex
+    type: LoadBalancer
+    loadBalancerIP: "192.168.8.79"
+    ports:
+      http:
+        port: 32400
+
+ingress:
+  plex:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: cloudflare
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+    - host: plex.mcmahan.io
+      paths:
+      - path: /
+        pathType: Prefix
+        service:
+          identifier: web
+          port: http
+    tls:
+    - secretName: 'plex-cert'
+      hosts:
+      - plex.mcmahan.io
+
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: ceph-block
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    advancedMounts:
+      plex:
+        app:
+          - path: /config
+  transcode:
+    enabled: true
+    type: emptyDir
+  media:
+    enabled: true
+    type: nfs
+    server: peepums
+    path: /pool01/media/plex
+    advancedMounts:
+      plex:
+        app:
+          - path: /data
+            readOnly: true

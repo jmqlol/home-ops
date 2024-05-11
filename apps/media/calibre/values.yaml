@@ -1,0 +1,80 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/common-3.0.1/charts/library/common/values.schema.json
+controllers:
+  calibre:
+    containers:
+      app:
+        image:
+          repository: lscr.io/linuxserver/calibre
+          tag: 7.10.0
+          pullPolicy: IfNotPresent
+        env:
+          TZ: "America/Chicago"
+          PUID: 979
+          PGID: 979
+      web:
+        image:
+          repository: lscr.io/linuxserver/calibre-web
+          tag: 0.6.21
+          pullPolicy: IfNotPresent
+        env:
+          TZ: "America/Chicago"
+          PUID: 979
+          PGID: 979
+          DOCKER_MODS: "linuxserver/mods:universal-calibre"
+          OAUTHLIB_RELAX_TOKEN_SCOPE: 1
+
+service:
+  web:
+    enabled: true
+    controller: calibre
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: calibre-web.localdomain
+    type: LoadBalancer
+    ports:
+      http:
+        port: 80
+        targetPort: 8083
+
+ingress:
+  calibre-web:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: cloudflare
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+      - host: calibre-web.mcmahan.io
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: web
+              port: http
+    tls:
+      - secretName: 'calibre-web-cert'
+        hosts:
+          - calibre-web.mcmahan.io
+
+persistence:
+  web-config:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: ceph-block
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    advancedMounts:
+      calibre:
+        web:
+          - path: /config
+  books:
+    enabled: true
+    type: nfs
+    server: peepums
+    path: /pool01/media/books
+    advancedMounts:
+      calibre:
+        app:
+          - path: /config
+        web:
+          - path: /books

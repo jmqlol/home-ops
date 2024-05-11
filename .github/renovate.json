@@ -24,6 +24,14 @@
     {
       "matchSourceUrls": ["https://github.com/kubernetes-sigs/node-feature-discovery"],
       "groupName": "nfd"
+    },
+    {
+      "matchPackageNames": ["ghcr.io/linuxserver/overseerr"],
+      "allowedVersions": "!/^2021/"
+    },
+    {
+      "matchPackageNames": ["lscr.io/linuxserver/calibre-web"],
+      "allowedVersions": "!/^2021|^5/"
     }
   ],
   "customManagers": [

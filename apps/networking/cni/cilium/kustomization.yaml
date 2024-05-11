@@ -5,7 +5,7 @@ kind: Kustomization
 helmCharts:
   - name: cilium
     repo: https://helm.cilium.io
-    version: 1.15.1
+    version: 1.15.4
     releaseName: cilium
     namespace: kube-system
     valuesInline:
@@ -36,7 +36,7 @@ helmCharts:
         masquerade: true
       cgroup:
         autoMount:
-          enabled: true
+          enabled: false
         hostRoot: /sys/fs/cgroup
       hubble:
         tls:
